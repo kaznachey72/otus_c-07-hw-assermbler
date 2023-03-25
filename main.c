@@ -76,7 +76,7 @@ void m(list_t *top, UnaryFunc func)
 
 }
 
-// transform
+// copy_if
 list_t *f(list_t *i_top, list_t *o_top, UnaryPred pred)
 {
 #if 0
