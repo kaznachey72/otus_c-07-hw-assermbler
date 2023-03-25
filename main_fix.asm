@@ -21,16 +21,13 @@ print_int:
 
     ret
 
-
 ;--- fix memory leaks ---
 
 del_element:
     call free
-
     ret
 
 ;------------------------
-
 
 ;;; p proc
 p:
@@ -59,7 +56,7 @@ add_element:
 
     ret
 
-;------------------------
+;--- m proc -------------
 m:
     push rbp
     push r12
@@ -70,59 +67,61 @@ m:
     je   .exit
     
     .loop:
-    mov  r13, [rdi+8]
-    call r12            
-    mov  rdi, r13
-    test r13, r13
-    jne  .loop
+        mov  r13, [rdi+8]
+        call r12            
+        mov  rdi, r13
+        test r13, r13
+        jne  .loop
 
     .exit:
-    pop r13
-    pop r12
-    pop rbp
-    ret
+        pop r13
+        pop r12
+        pop rbp
+        ret
 ;------------------------
 
-;;; f proc
+;--- f proc -------------
+
 f:
-    mov rax, rsi
-
-    test rdi, rdi
-    jz outf
-
-    push rbx
-    push r12
+    push r15
+    push r14
     push r13
+    mov  r13, rdi   ; iput
+    mov  r14, rsi   ; oput
+    mov  r15, rdx   ; pred
 
-    mov rbx, rdi
-    mov r12, rsi
-    mov r13, rdx
+    test r13, r13
+    je .exit
 
-    mov rdi, [rdi]
-    call rdx
-    test rax, rax
-    jz z
+    .loop_cond:
+        mov  rdi, [r13]
+        call r15
+        test rax, rax
+        jne  .pred_cond
+        
+        mov  r13, [r13+8]
+        test r13, r13
+        jne  .loop_cond
+        jmp  .exit
 
-    mov rdi, [rbx]
-    mov rsi, r12
-    call add_element
-    mov rsi, rax
-    jmp ff
+    .pred_cond:
+        mov  rdi, [r13]
+        mov  rsi, r14
+        call add_element
+        
+        mov  r13, [r13+8]
+        mov  r14, rax
+        test r13, r13
+        jne  .loop_cond
+    
+    .exit:
+        mov rax, r14
+        pop r13
+        pop r14
+        pop r15
+        ret
 
-z:
-    mov rsi, r12
-
-ff:
-    mov rdi, [rbx + 8]
-    mov rdx, r13
-    call f
-
-    pop r13
-    pop r12
-    pop rbx
-
-outf:
-    ret
+;------------------------
 
 ;;; main proc
 main:
