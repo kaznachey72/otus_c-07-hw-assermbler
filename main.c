@@ -53,17 +53,35 @@ list_t *add_element(int64_t val, list_t *top)
 // for_each
 void m(list_t *top, UnaryFunc func)
 {
+#if 0
+    /* original */
+
     if (top) {
         list_t *next = top->next;
 
         func(top);
         m(next, func);
     }
+
+#else
+    /* modified */
+
+    while (top) {
+        list_t *next = top->next;
+        func(top);
+        top = next;
+    }
+
+#endif
+
 }
 
 // transform
 list_t *f(list_t *i_top, list_t *o_top, UnaryPred pred)
 {
+#if 0
+    /* original */
+
     if (!i_top) {
         return o_top;
     }
@@ -72,6 +90,19 @@ list_t *f(list_t *i_top, list_t *o_top, UnaryPred pred)
         o_top = add_element(i_top->data, o_top);
     }
     return f(i_top->next, o_top, pred);
+
+#else
+    /* modified */
+
+    while (i_top) {
+        if (pred(i_top->data)) {
+            o_top = add_element(i_top->data, o_top);
+        }
+        i_top = i_top->next;
+    }
+    return o_top;
+
+#endif
 }
 
 int main()
