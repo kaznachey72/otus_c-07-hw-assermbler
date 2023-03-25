@@ -59,30 +59,29 @@ add_element:
 
     ret
 
-;;; m proc
+;------------------------
 m:
-    test rdi, rdi
-    jz outm
-
     push rbp
-    push rbx
+    push r12
+    push r13
+    
+    mov  r12, rsi
+    test rdi, rdi
+    je   .exit
+    
+    .loop:
+    mov  r13, [rdi+8]
+    call r12            
+    mov  rdi, r13
+    test r13, r13
+    jne  .loop
 
-    mov rbx, rdi
-    mov rbp, rsi
-
-    mov r13, [rdi + 8] ; fix: poiner to next
-;   mov rdi, [rdi]     ; fix: pointer argument
-    call rsi
-
-    mov rdi, r13
-    mov rsi, rbp
-    call m
-
-    pop rbx
+    .exit:
+    pop r13
+    pop r12
     pop rbp
-
-outm:
     ret
+;------------------------
 
 ;;; f proc
 f:
